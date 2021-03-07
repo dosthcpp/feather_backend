@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const bodyParser = require("body-parser");
@@ -11,9 +12,9 @@ const Base64 = require("crypto-js/enc-base64");
 const cors = require("cors");
 const path = require("path");
 const axios = require("axios");
+const mongoose = require("mongoose");
 
 const app = express();
-const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -23,6 +24,7 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+mongoose.Promise = global.Promise;
 app.use(cors());
 const router = express.Router();
 router.post("/send", (req, res) => {
@@ -113,6 +115,11 @@ router.post("/confirm", async (req, res) => {
 });
 app.use("/", router);
 
-const server = http.createServer(app).listen(PORT, () => {
-  console.log(`server listening on PORT ${PORT}`);
+mongoose
+  .connect(process.env.MONGO_URI, { useMongoClient: true })
+  .then(() => console.log("Successfully connected to mongodb"))
+  .catch((e) => console.error(e));
+
+const server = http.createServer(app).listen(process.env.PORT || 3000, () => {
+  console.log("server listening on PORT 3000");
 });
