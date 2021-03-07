@@ -116,7 +116,7 @@ router.post("/confirm", async (req, res) => {
 app.use("/", router);
 
 mongoose
-  .connect(process.env.MONGO_URI, { useMongoClient: true })
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true })
   .then(() => console.log("Successfully connected to mongodb"))
   .catch((e) => console.error(e));
 
