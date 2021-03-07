@@ -13,6 +13,7 @@ const cors = require("cors");
 const path = require("path");
 const axios = require("axios");
 const mongoose = require("mongoose");
+const User = require("./models/user");
 
 const app = express();
 
@@ -112,6 +113,25 @@ router.post("/confirm", async (req, res) => {
       code: 200,
     });
   }
+});
+
+router.post("/register", async (req, res) => {
+  const { fname, lname, phoneNumber } = req.body;
+  console.log(fname);
+  // const newUser = new User({
+  //   fname,
+  //   lname,
+  //   phoneNumber,
+  // });
+
+  // newUser
+  //   .save()
+  //   .then(() => {
+  //     console.log(newUser);
+  //   })
+  //   .catch((e) => {
+  //     console.log(e);
+  //   });
 });
 app.use("/", router);
 
