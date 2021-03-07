@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    phoneNumber: { type: String, required: true, unique: true },
-    fname: { tpye: String, required: true },
-    lname: { tpye: String, required: true },
+    phoneNumber: { type: String, unique: true },
+    fname: { type: String },
+    lname: { type: String },
+    username: { type: String },
   },
   {
     collection: "feather",

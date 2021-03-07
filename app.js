@@ -59,6 +59,8 @@ router.post("/send", (req, res) => {
   let verifyCode = Math.floor(Math.random() * 1000000) + 1000000;
   if (verifyCode > 1000000) {
     verifyCode = verifyCode - 1000000;
+  } else if (verifyCode < 100000) {
+    veryfyCode = "0" + verifyCode;
   }
 
   cache.put(phoneNumber, verifyCode);
@@ -87,7 +89,6 @@ router.post("/send", (req, res) => {
       }
     )
     .then((result) => {
-      console.log(result.data);
       res.json({
         code: result.data.statusCode,
         status: result.data.statusName,
@@ -98,6 +99,7 @@ router.post("/send", (req, res) => {
       console.log(e);
     });
 });
+
 router.post("/confirm", async (req, res) => {
   const { phoneNumber, verifyCode } = req.body;
   const CacheData = cache.get(phoneNumber);
@@ -116,23 +118,69 @@ router.post("/confirm", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { fname, lname, phoneNumber } = req.body;
-  console.log(fname);
-  // const newUser = new User({
-  //   fname,
-  //   lname,
-  //   phoneNumber,
-  // });
-
-  // newUser
-  //   .save()
-  //   .then(() => {
-  //     console.log(newUser);
-  //   })
-  //   .catch((e) => {
-  //     console.log(e);
-  //   });
+  const { fname, lname, phoneNumber, username } = req.body;
+  const newUser = new User({
+    fname,
+    lname,
+    phoneNumber,
+    username,
+  });
+  newUser
+    .save()
+    .then((result) => {
+      console.log(result);
+      res.json({
+        status: "success",
+        code: 200,
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.json({
+        status: "failure",
+        code: 400,
+      });
+    });
 });
+
+router.post("/check", async (req, res) => {
+  const { phoneNumber } = req.body;
+  User.findOne({ phoneNumber }, (err, result) => {
+    if (err) return res.status(500).send({ error: "database failure" });
+    else {
+      if (result?.username) {
+        res.json({
+          nickname: result?.username,
+        });
+      } else {
+        res.json({
+          nickname: "@Anonymous",
+        });
+      }
+    }
+  });
+});
+
+router.post("/check2", async (req, res) => {
+  const { phoneNumber } = req.body;
+  User.findOne({ phoneNumber }, (err, result) => {
+    if (err) return res.status(500).send({ error: "database failure" });
+    else {
+      if (result) {
+        res.json({
+          fname: result?.fname,
+          lname: result?.lname,
+          username: result?.username,
+        });
+      } else {
+        res.json({
+          username: "@Anonymous",
+        });
+      }
+    }
+  });
+});
+
 app.use("/", router);
 
 mongoose
